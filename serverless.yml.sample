@@ -1,0 +1,17 @@
+# this is how the serverless.yml file should look like.
+# replace the appId value with your own skill ID.
+service: alexa-oecd-embargoes
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: eu-west-1 # Alexa skills are supported only by this region in EU
+
+functions:
+  embargoes:
+    handler: index.handler
+    events:
+      - alexaSkill
+          # This is currently not yet possible in Serverless 1.26 (comes in 1.27)
+          #appId: amzn1.ask.skill.your-skill-id-goes-here
+          #enabled: true

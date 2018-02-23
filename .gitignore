@@ -1,0 +1,8 @@
+node_modules
+*.zip
+# temporary to avoid alexa skill id being leaked
+serverless.yml
+.env
+
+# Serverless directories
+.serverless
