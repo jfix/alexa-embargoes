@@ -9,70 +9,47 @@ const states = {
 }
 // local variable holding reference to the Alexa SDK object
 let alexa
-
 // OPTIONAL: replace with 'amzn1.ask.skill.[your-unique-value-here]'
 let APP_ID = process.env.ALEXA_SKILL_ID
-
-// URL to get the .ics from, in this instance we are getting from Stanford however this can be changed
+// URL to get the .ics from
 const URL = 'https://raw.githubusercontent.com/oecd/embargo-calendar/master/embargoes.ics'
-
 // Skills name
 const skillName = 'OECD publication embargoes:'
-
 // Message when the skill is first called
 const welcomeMessage = 'You can ask for the embargoes today. Search for embargoes by date. or say help. What would you like? '
-
 // Message for help intent
 const HelpMessage = 'Here are some things you can say: Get me embargoes for today. Tell me what embargoes are on the 18th of July. What embargoes are planned for next week? Get me embargoes for tomorrow. '
-
 const descriptionStateHelpMessage = 'Here are some things you can say: Tell me about embargo one'
-
 // Used when there is no data within a time period
 const NoDataMessage = 'Sorry there aren\'t any publication embargoes in the foreseeable future. Would you like to search again?'
-
 // Used to tell user skill is closing
 const shutdownMessage = 'Ok see you again soon.'
-
 // Message used when only 1 event is found allowing for difference in punctuation
 const oneEventMessage = 'There is 1 embargo '
-
 // Message used when more than 1 event is found allowing for difference in punctuation
 const multipleEventMessage = 'There are %d embargoes '
-
 // text used after the number of events has been said
 const scheduledEventMessage = 'scheduled for this time frame. I\'ve sent the details to your Alexa app: '
-
 const firstThreeMessage = 'Here are the first %d. '
-
 // the values within the {} are swapped out for variables
 const eventSummary = 'The %s embargo is, %s at %s on %s '
-
 // Only used for the card on the companion app
 const cardContentSummary = '%s at %s on %s '
-
 // More info text
 const haveEventsreprompt = 'Give me an embargo number to hear more information.'
-
 // Error if a date is out of range
 const dateOutOfRange = 'Date is out of range please choose another date'
-
 // Error if a event number is out of range
 const eventOutOfRange = 'Embargo number is out of range please choose another embargo number'
-
 // Used when an event is asked for
 const descriptionMessage = 'Here\'s the description '
-
 // Used when an event is asked for
 const killSkillMessage = 'Ok, great, see you next time.'
-
 const eventNumberMoreInfoText = 'You can say the embargo number for more information.'
-
 // used for title on companion app
-const cardTitle = 'Embargoes'
-
+const cardTitle = 'OECD publication embargoes'
 // output for Alexa
 let output = ''
-
 // stores embargoes that are found to be in our date range
 let relevantEvents = []
 
@@ -114,12 +91,17 @@ const startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
       // Declare variables
     let eventList = []
     const slotValue = this.event.request.intent.slots.date.value
+    console.log(`SLOTVALUE IS THIS: ${slotValue}.`)
     if (slotValue !== undefined) {
       let parent = this
 
       // Using the iCal library I pass the URL of where we want to get the data from.
       ical.fromURL(URL, {}, function (error, data) {
-        if (error) throw error
+        if (error) {
+          console.log(`ERROR retrieving calendar: ${JSON.stringify(error)}`)
+          throw error
+        }
+        console.log(`SUCCESS retrieving calendar, showing first item: ${JSON.stringify(data[0])}`)
         // Loop through all iCal data found
         for (let k in data) {
           if (data.hasOwnProperty(k)) {
@@ -131,6 +113,7 @@ const startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
               description: removeTags(ev.description),
               start: ev.start
             }
+            console.log(`eventData: ${JSON.stringify(eventData)}`)
             // add the newly created object to an array for use later.
             eventList.push(eventData)
           }
@@ -293,6 +276,7 @@ exports.handler = function (event, context, callback) {
   alexa.registerHandlers(newSessionHandlers, startSearchHandlers, descriptionHandlers)
   alexa.execute()
 }
+
 // ======== HELPER FUNCTIONS ==============
 
 // Remove HTML tags from string
@@ -399,5 +383,6 @@ function getEventsBeweenDates (startDate, endDate, eventList) {
   }
 
   console.log('FOUND ' + data.length + ' events between those times')
+  console.log(`Here is the first one: ${JSON.stringify(data[0])}`)
   return data
 }
