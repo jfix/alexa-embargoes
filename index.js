@@ -196,7 +196,7 @@ const startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
         }
       })
     } else {
-      this.response.speak('I\'m sorry.  What day did you want me to look for events?').listen('I\'m sorry.  What day did you want me to look for events?')
+      this.response.speak('I\'m sorry.  What day did you want me to look for embargoes?').listen('I\'m sorry.  What day did you want me to look for embargoes?')
     }
 
     this.emit(':responseReady')
@@ -228,8 +228,8 @@ const startSearchHandlers = Alexa.CreateStateHandler(states.SEARCHMODE, {
 
 // Create a new handler object for description state
 const descriptionHandlers = Alexa.CreateStateHandler(states.DESCRIPTION, {
-  'eventIntent': function () {
-    const reprompt = ' Would you like to hear another event?'
+  'embargoIntent': function () {
+    const reprompt = ' Would you like to hear about another embargo?'
     let slotValue = this.event.request.intent.slots.number.value
 
     // parse slot value
